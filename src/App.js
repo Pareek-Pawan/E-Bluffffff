@@ -1,72 +1,209 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Search, Menu, X, Star, ArrowRight, Zap, Shield, Truck } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  ShoppingCart,
+  Search,
+  Menu,
+  X,
+  Star,
+  ArrowRight,
+  Zap,
+  Shield,
+  Truck,
+} from "lucide-react";
 
 const TechTopia = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [cart, setCart] = useState([]); // ✅ cart state
+  const [page, setPage] = useState("home"); // ✅ home | cart | payment
+
+  // ✅ Add to cart logic
+  const addToCart = (product) => {
+    setCart((prev) => {
+      const existing = prev.find((p) => p.id === product.id);
+      if (existing) {
+        return prev.map((p) =>
+          p.id === product.id ? { ...p, qty: p.qty + 1 } : p
+        );
+      } else {
+        return [...prev, { ...product, qty: 1 }];
+      }
+    });
+  };
+
+  const removeFromCart = (id) => {
+    setCart((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const updateQty = (id, qty) => {
+    if (qty <= 0) return removeFromCart(id);
+    setCart((prev) => prev.map((p) => (p.id === id ? { ...p, qty } : p)));
+  };
 
   const categories = [
-    { name: 'Laptops', icon: '💻', color: 'from-blue-500 to-purple-600' },
-    { name: 'Smartphones', icon: '📱', color: 'from-green-500 to-teal-600' },
-    { name: 'Gaming Mice', icon: '🎙️', color: 'from-red-500 to-pink-600' },
-    { name: 'Keyboards', icon: '⌨️', color: 'from-yellow-500 to-orange-600' },
-    { name: 'Speakers', icon: '🔊', color: 'from-purple-500 to-indigo-600' },
-    { name: 'Headphones', icon: '🎧', color: 'from-teal-500 to-cyan-600' }
+    { name: "Laptops", icon: "💻", color: "from-blue-500 to-purple-600" },
+    { name: "Smartphones", icon: "📱", color: "from-green-500 to-teal-600" },
+    { name: "Gaming Mice", icon: "🎙️", color: "from-red-500 to-pink-600" },
+    { name: "Keyboards", icon: "⌨️", color: "from-yellow-500 to-orange-600" },
+    { name: "Speakers", icon: "🔊", color: "from-purple-500 to-indigo-600" },
+    { name: "Headphones", icon: "🎧", color: "from-teal-500 to-cyan-600" },
   ];
 
   const featuredProducts = [
-    {
-      id: 1,
-      name: 'UltraBook Pro X1',
-      category: 'Laptop',
-      price: 1299,
-      originalPrice: 1499,
-      rating: 4.8,
-      image: '💻',
-      features: ['16GB RAM', 'Intel i7', '512GB SSD']
-    },
-    {
-      id: 2,
-      name: 'Galaxy Prime 5G',
-      category: 'Mobile',
-      price: 899,
-      originalPrice: 999,
-      rating: 4.6,
-      image: '📱',
-      features: ['5G Ready', '128GB Storage', '50MP Camera']
-    },
-    {
-      id: 3,
-      name: 'Gaming Beast Mouse',
-      category: 'Mouse',
-      price: 79,
-      originalPrice: 99,
-      rating: 4.9,
-      image: '🖱️',
-      features: ['RGB Lighting', '16000 DPI', 'Wireless']
-    }
-  ];
+  // Laptops
+  {
+    id: 1,
+    name: "UltraBook Pro X1",
+    category: "Laptop",
+    price: 1299,
+    originalPrice: 1499,
+    rating: 4.8,
+    image: "💻",
+    features: ["16GB RAM", "Intel i7", "512GB SSD"],
+  },
+  {
+    id: 2,
+    name: "Gaming Laptop RTX",
+    category: "Laptop",
+    price: 1899,
+    originalPrice: 2099,
+    rating: 4.9,
+    image: "🎮",
+    features: ["32GB RAM", "RTX 4070", "1TB SSD"],
+  },
+
+  // Smartphones
+  {
+    id: 3,
+    name: "Galaxy Prime 5G",
+    category: "Mobile",
+    price: 899,
+    originalPrice: 999,
+    rating: 4.6,
+    image: "📱",
+    features: ["5G Ready", "128GB Storage", "50MP Camera"],
+  },
+  {
+    id: 4,
+    name: "iPhone 15 Pro",
+    category: "Mobile",
+    price: 1199,
+    originalPrice: 1299,
+    rating: 4.7,
+    image: "🍎",
+    features: ["A17 Bionic", "256GB Storage", "48MP Camera"],
+  },
+
+  // Accessories - Mice
+  {
+    id: 5,
+    name: "Gaming Beast Mouse",
+    category: "Mouse",
+    price: 79,
+    originalPrice: 99,
+    rating: 4.9,
+    image: "🖱️",
+    features: ["RGB Lighting", "16000 DPI", "Wireless"],
+  },
+  {
+    id: 6,
+    name: "Pro Wireless Mouse",
+    category: "Mouse",
+    price: 99,
+    originalPrice: 129,
+    rating: 4.5,
+    image: "🖲️",
+    features: ["Bluetooth", "Ergonomic Design", "Fast Charging"],
+  },
+
+  // Accessories - Keyboards
+  {
+    id: 7,
+    name: "Mechanical Pro Keyboard",
+    category: "Keyboard",
+    price: 149,
+    originalPrice: 199,
+    rating: 4.8,
+    image: "⌨️",
+    features: ["Blue Switches", "RGB", "Hot-swappable"],
+  },
+  {
+    id: 8,
+    name: "Compact Wireless Keyboard",
+    category: "Keyboard",
+    price: 89,
+    originalPrice: 119,
+    rating: 4.3,
+    image: "🔠",
+    features: ["Slim Design", "Bluetooth 5.0", "Rechargeable"],
+  },
+
+  // Audio - Headphones
+  {
+    id: 9,
+    name: "Noise Cancelling Headphones",
+    category: "Headphones",
+    price: 249,
+    originalPrice: 299,
+    rating: 4.7,
+    image: "🎧",
+    features: ["ANC", "30hrs Battery", "Wireless"],
+  },
+  {
+    id: 10,
+    name: "Gaming Headset Pro",
+    category: "Headphones",
+    price: 179,
+    originalPrice: 199,
+    rating: 4.6,
+    image: "🎮🎧",
+    features: ["7.1 Surround", "Noise Cancelling Mic", "RGB"],
+  },
+
+  // Audio - Speakers
+  {
+    id: 11,
+    name: "Portable Bluetooth Speaker",
+    category: "Speaker",
+    price: 99,
+    originalPrice: 129,
+    rating: 4.4,
+    image: "🔊",
+    features: ["10hrs Battery", "Waterproof", "Deep Bass"],
+  },
+  {
+    id: 12,
+    name: "Home Theater Soundbar",
+    category: "Speaker",
+    price: 349,
+    originalPrice: 399,
+    rating: 4.8,
+    image: "📻",
+    features: ["Dolby Atmos", "Bluetooth 5.1", "Subwoofer"],
+  },
+];
+
 
   const heroSlides = [
     {
-      title: 'Next-Gen Gaming Setup',
-      subtitle: 'Elevate your gaming experience',
-      cta: 'Shop Gaming',
-      gradient: 'from-purple-600 via-blue-600 to-indigo-700'
+      title: "Next-Gen Gaming Setup",
+      subtitle: "Elevate your gaming experience",
+      cta: "Shop Gaming",
+      gradient: "from-purple-600 via-blue-600 to-indigo-700",
     },
     {
-      title: 'Productivity Powerhouse',
-      subtitle: 'Tools for the modern professional',
-      cta: 'View Laptops',
-      gradient: 'from-emerald-600 via-teal-600 to-cyan-700'
+      title: "Productivity Powerhouse",
+      subtitle: "Tools for the modern professional",
+      cta: "View Laptops",
+      gradient: "from-emerald-600 via-teal-600 to-cyan-700",
     },
     {
-      title: 'Audio Excellence',
-      subtitle: 'Immerse yourself in crystal clear sound',
-      cta: 'Explore Audio',
-      gradient: 'from-red-600 via-pink-600 to-rose-700'
-    }
+      title: "Audio Excellence",
+      subtitle: "Immerse yourself in crystal clear sound",
+      cta: "Explore Audio",
+      gradient: "from-red-600 via-pink-600 to-rose-700",
+    },
   ];
 
   useEffect(() => {
@@ -76,6 +213,211 @@ const TechTopia = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // ✅ Page Rendering
+  const renderPage = () => {
+    if (page === "cart") {
+      const total = cart.reduce((s, p) => s + p.price * p.qty, 0);
+      return (
+        <div className="max-w-5xl mx-auto py-12 px-4">
+          <h2 className="text-3xl font-bold mb-6">Your Cart</h2>
+          {cart.length === 0 ? (
+            <p className="text-gray-600">Your cart is empty.</p>
+          ) : (
+            <div className="space-y-6">
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between bg-white p-4 rounded-lg shadow"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl">{item.image}</span>
+                    <div>
+                      <h3 className="font-semibold">{item.name}</h3>
+                      <p className="text-gray-500">${item.price}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => updateQty(item.id, item.qty - 1)}
+                      className="px-2 py-1 bg-gray-200 rounded"
+                    >
+                      -
+                    </button>
+                    <span>{item.qty}</span>
+                    <button
+                      onClick={() => updateQty(item.id, item.qty + 1)}
+                      className="px-2 py-1 bg-gray-200 rounded"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <p className="font-semibold">
+                    ${(item.price * item.qty).toFixed(2)}
+                  </p>
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="text-red-500 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+
+              <div className="flex justify-between items-center mt-6 text-lg font-bold">
+                <span>Total:</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setPage("payment")}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+                >
+                  Proceed to Checkout
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (page === "payment") {
+      return (
+        <div className="max-w-3xl mx-auto py-12 px-4">
+          <h2 className="text-3xl font-bold mb-6">Payment Options</h2>
+          <div className="space-y-4">
+            <label className="block p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="radio" name="payment" className="mr-2" /> UPI
+            </label>
+            <label className="block p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="radio" name="payment" className="mr-2" /> Net Banking
+            </label>
+            <label className="block p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="radio" name="payment" className="mr-2" /> Credit /
+              Debit Card
+            </label>
+            <label className="block p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="radio" name="payment" className="mr-2" /> Cash on
+              Delivery
+            </label>
+          </div>
+
+          <button
+            onClick={() => alert("✅ Payment Successful!")}
+            className="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
+          >
+            Pay Now
+          </button>
+        </div>
+      );
+    }
+
+    // Default Home Page
+    return (
+      <>
+        {/* Hero Section */}
+        <section className="relative h-[500px] overflow-hidden">
+          {heroSlides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                currentSlide === index ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <div
+                className={`absolute inset-0 bg-gradient-to-r ${slide.gradient} opacity-90`}
+              ></div>
+              <div className="relative h-full flex flex-col items-center justify-center text-center text-white px-4">
+                <h2 className="text-4xl md:text-6xl font-bold mb-6">
+                  {slide.title}
+                </h2>
+                <p className="text-xl md:text-2xl mb-8">{slide.subtitle}</p>
+                <button className="bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-gray-100 transition">
+                  {slide.cta}
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* Categories */}
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4">
+            <h2 className="text-3xl font-bold mb-8 text-center">
+              Shop by Category
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+              {categories.map((cat) => (
+                <div
+                  key={cat.name}
+                  className={`p-6 bg-gradient-to-br ${cat.color} rounded-lg text-center text-white font-semibold shadow hover:scale-105 transition`}
+                >
+                  <span className="text-4xl block mb-2">{cat.icon}</span>
+                  {cat.name}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Products */}
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12">
+              Featured Products
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition"
+                >
+                  <div className="text-6xl text-center mb-4">
+                    {product.image}
+                  </div>
+                  <h3 className="text-xl font-semibold">{product.name}</h3>
+                  <p className="text-gray-500 text-sm">{product.category}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Star className="w-4 h-4 text-yellow-400" />
+                    <span>{product.rating}</span>
+                  </div>
+                  <div className="mt-2 flex gap-2 flex-wrap">
+                    {product.features.map((f, i) => (
+                      <span
+                        key={i}
+                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between mt-4">
+                    <div>
+                      <span className="text-xl font-bold text-gray-900">
+                        ${product.price}
+                      </span>
+                      <span className="text-sm line-through text-gray-500 ml-2">
+                        ${product.originalPrice}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => addToCart(product)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -83,7 +425,10 @@ const TechTopia = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
-            <div className="flex items-center space-x-2">
+            <div
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => setPage("home")}
+            >
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <Zap className="w-6 h-6 text-white" />
               </div>
@@ -108,267 +453,39 @@ const TechTopia = () => {
 
             {/* Right Icons */}
             <div className="flex items-center space-x-4">
-              <button className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors">
+              <button
+                className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                onClick={() => setPage("cart")}
+              >
                 <ShoppingCart className="w-6 h-6" />
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  3
-                </span>
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cart.reduce((s, p) => s + p.qty, 0)}
+                  </span>
+                )}
               </button>
+
               <button
                 className="md:hidden p-2 text-gray-600"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {isMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-b shadow-lg">
-          <div className="px-4 py-4 space-y-4">
-            <input
-              type="text"
-              placeholder="Search products..."
-              className="w-full px-4 py-2 border rounded-lg"
-            />
-            <div className="grid grid-cols-2 gap-2">
-              {categories.map((category, index) => (
-                <button
-                  key={index}
-                  className="p-3 text-left rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  <span className="text-2xl mr-2">{category.icon}</span>
-                  <span className="text-sm font-medium">{category.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Hero Section */}
-      <section className="relative h-96 md:h-[500px] overflow-hidden">
-        <div className={`absolute inset-0 bg-gradient-to-r ${heroSlides[currentSlide].gradient} transition-all duration-1000`}>
-          <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-          <div className="relative z-10 h-full flex items-center justify-center text-center text-white px-4">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in">
-                {heroSlides[currentSlide].title}
-              </h2>
-              <p className="text-xl md:text-2xl mb-8 opacity-90">
-                {heroSlides[currentSlide].subtitle}
-              </p>
-              <button className="bg-white text-gray-900 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-colors transform hover:scale-105">
-                {heroSlides[currentSlide].cta}
-                <ArrowRight className="inline-block ml-2 w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Slide Indicators */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                currentSlide === index ? 'bg-white' : 'bg-white bg-opacity-50'
-              }`}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Truck className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Fast Delivery</h3>
-              <p className="text-gray-600">Free shipping on orders over $100</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Quality Guarantee</h3>
-              <p className="text-gray-600">30-day money-back guarantee</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-8 h-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Latest Tech</h3>
-              <p className="text-gray-600">Cutting-edge technology products</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Shop by Category
-            </h2>
-            <p className="text-xl text-gray-600">Find exactly what you're looking for</p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((category, index) => (
-              <div
-                key={index}
-                className="group cursor-pointer transform hover:scale-105 transition-all duration-300"
-              >
-                <div className={`h-32 rounded-2xl bg-gradient-to-br ${category.color} p-6 flex flex-col items-center justify-center text-white shadow-lg group-hover:shadow-xl`}>
-                  <span className="text-4xl mb-2">{category.icon}</span>
-                  <span className="text-sm font-semibold text-center">{category.name}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Featured Products
-            </h2>
-            <p className="text-xl text-gray-600">Handpicked deals just for you</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-gray-100"
-              >
-                <div className="p-8 text-center bg-gradient-to-br from-gray-50 to-white">
-                  <span className="text-6xl">{product.image}</span>
-                </div>
-                
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-blue-600 font-semibold">{product.category}</span>
-                    <div className="flex items-center">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-600 ml-1">{product.rating}</span>
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{product.name}</h3>
-                  
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {product.features.map((feature, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-                      >
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-2xl font-bold text-gray-900">${product.price}</span>
-                      <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
-                    </div>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                      Add to Cart
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Stay in the Loop
-          </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Get the latest deals and tech news delivered to your inbox
-          </p>
-          <div className="flex flex-col sm:flex-row max-w-md mx-auto gap-4">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-30"
-            />
-            <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* Page Rendering */}
+      {renderPage()}
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="text-xl font-bold">TechTopia</h3>
-              </div>
-              <p className="text-gray-400">
-                Your premium destination for the latest in technology and electronics.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Categories</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Laptops</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Smartphones</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Gaming</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Audio</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Shipping Info</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Connect</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Twitter</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Facebook</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Instagram</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">YouTube</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 TechTopia. All rights reserved.</p>
-          </div>
-        </div>
+      <footer className="bg-gray-900 text-white py-8 text-center">
+        <p>© 2025 TechTopia. All rights reserved.</p>
       </footer>
     </div>
   );
